@@ -1981,7 +1981,7 @@ SPVM_API_VALUE SPVM_RUNTIME_call_sub(SPVM_API* api, int32_t sub_id, SPVM_API_VAL
         {
         
           // Get return value
-          SPVM_API_VALUE return_value = call_stack[operand_stack_top];
+          SPVM_API_VALUE return_value = call_stack[bytecodes[bytecode_index + 1]];
           
           // Decrement object my vars reference count
           if (object_my_vars_length) {
@@ -2010,7 +2010,7 @@ SPVM_API_VALUE SPVM_RUNTIME_call_sub(SPVM_API* api, int32_t sub_id, SPVM_API_VAL
 
         label_SPVM_BYTECODE_C_CODE_REG_RETURN_OBJECT: {
         
-          SPVM_API_VALUE return_value = call_stack[operand_stack_top];
+          SPVM_API_VALUE return_value = call_stack[bytecodes[bytecode_index + 1]];
           
           // Increment ref count of return value not to release by decrement
           if (return_value.object_value != NULL) {
