@@ -1939,7 +1939,7 @@ SPVM_API_VALUE SPVM_RUNTIME_call_sub(SPVM_API* api, int32_t sub_id, SPVM_API_VAL
         break;
       case SPVM_BYTECODE_C_CODE_REG_CALL_SUB: {
         // Get subroutine ID
-        int32_t call_sub_id = bytecodes[bytecode_index + 1];
+        int32_t call_sub_id = bytecodes[bytecode_index + 2];
         
         int32_t args_length = api->get_sub_args_length(api, call_sub_id);
         
@@ -1956,12 +1956,11 @@ SPVM_API_VALUE SPVM_RUNTIME_call_sub(SPVM_API* api, int32_t sub_id, SPVM_API_VAL
         }
         else {
           if (!api->get_sub_is_void(api, call_sub_id)) {
-            operand_stack_top++;
-            call_stack[operand_stack_top] = return_value;
+            call_stack[bytecodes[bytecode_index + 1]] = return_value;
           }
           
           // Next operation
-          bytecode_index += 2 + (debug * 2);
+          bytecode_index += 3 + (debug * 2);
           
           break;
         }

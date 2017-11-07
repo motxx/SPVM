@@ -348,6 +348,7 @@ void SPVM_DUMPER_dump_bytecode_array(SPVM_COMPILER* compiler, SPVM_BYTECODE_ARRA
         }
 
         // Have two operands
+        case SPVM_BYTECODE_C_CODE_REG_CALL_SUB:
         case SPVM_BYTECODE_C_CODE_REG_PUSH_ARG:
         case SPVM_BYTECODE_C_CODE_REG_POP_ARGS:
         case SPVM_BYTECODE_C_CODE_REG_WEAKEN_FIELD_OBJECT:
