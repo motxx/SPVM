@@ -65,7 +65,7 @@ SPVM_API_VALUE SPVM_RUNTIME_call_sub(SPVM_API* api, int32_t sub_id, SPVM_API_VAL
   
   // Call_stack_max
   int32_t call_stack_length = my_vars_length + api->get_sub_operand_stack_max(api, sub_id);
-  
+ 
   // Call stack
   SPVM_API_OBJECT* call_stack_array = api->new_value_array(api, call_stack_length);
   api->inc_ref_count(api, call_stack_array);
@@ -835,12 +835,12 @@ SPVM_API_VALUE SPVM_RUNTIME_call_sub(SPVM_API* api, int32_t sub_id, SPVM_API_VAL
         bytecode_index += 3;
         break;
       case SPVM_BYTECODE_C_CODE_REG_BOOL_BYTE:
-        call_stack[bytecodes[bytecode_index + 1]].byte_value = !!call_stack[bytecodes[bytecode_index + 2]].byte_value;
+        call_stack[bytecodes[bytecode_index + 1]].int_value = !!call_stack[bytecodes[bytecode_index + 2]].byte_value;
         
         bytecode_index += 3;
         break;
       case SPVM_BYTECODE_C_CODE_REG_BOOL_SHORT:
-        call_stack[bytecodes[bytecode_index + 1]].short_value = !!call_stack[bytecodes[bytecode_index + 2]].short_value;
+        call_stack[bytecodes[bytecode_index + 1]].int_value = !!call_stack[bytecodes[bytecode_index + 2]].short_value;
         
         bytecode_index += 3;
         break;
@@ -850,22 +850,22 @@ SPVM_API_VALUE SPVM_RUNTIME_call_sub(SPVM_API* api, int32_t sub_id, SPVM_API_VAL
         bytecode_index += 3;
         break;
       case SPVM_BYTECODE_C_CODE_REG_BOOL_LONG:
-        call_stack[bytecodes[bytecode_index + 1]].long_value = !!call_stack[bytecodes[bytecode_index + 2]].long_value;
+        call_stack[bytecodes[bytecode_index + 1]].int_value = !!call_stack[bytecodes[bytecode_index + 2]].long_value;
         
         bytecode_index += 3;
         break;
       case SPVM_BYTECODE_C_CODE_REG_BOOL_FLOAT:
-        call_stack[bytecodes[bytecode_index + 1]].float_value = !!call_stack[bytecodes[bytecode_index + 2]].float_value;
+        call_stack[bytecodes[bytecode_index + 1]].int_value = !!call_stack[bytecodes[bytecode_index + 2]].float_value;
         
         bytecode_index += 3;
         break;
       case SPVM_BYTECODE_C_CODE_REG_BOOL_DOUBLE:
-        call_stack[bytecodes[bytecode_index + 1]].double_value = !!call_stack[bytecodes[bytecode_index + 2]].double_value;
+        call_stack[bytecodes[bytecode_index + 1]].int_value = !!call_stack[bytecodes[bytecode_index + 2]].double_value;
         
         bytecode_index += 3;
         break;
       case SPVM_BYTECODE_C_CODE_REG_BOOL_OBJECT:
-        call_stack[bytecodes[bytecode_index + 1]].object_value = !!call_stack[bytecodes[bytecode_index + 2]].object_value;
+        call_stack[bytecodes[bytecode_index + 1]].int_value = !!call_stack[bytecodes[bytecode_index + 2]].object_value;
         
         bytecode_index += 3;
         break;
@@ -2275,6 +2275,15 @@ SPVM_API_VALUE SPVM_RUNTIME_call_sub(SPVM_API* api, int32_t sub_id, SPVM_API_VAL
         
         break;
       }
+      case SPVM_BYTECODE_C_CODE_REG_PUSH_ARG:
+        operand_stack_top++;
+        call_stack[operand_stack_top] = call_stack[bytecodes[bytecode_index + 1]];
+        bytecode_index += 2;
+        break;
+      case SPVM_BYTECODE_C_CODE_REG_POP_ARGS:
+        operand_stack_top -= bytecodes[bytecode_index + 1];
+        bytecode_index += 2;
+        break;
       case SPVM_BYTECODE_C_CODE_UNDEF:
         operand_stack_top++;
         call_stack[operand_stack_top].object_value = (void*)NULL;
