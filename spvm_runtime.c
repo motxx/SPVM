@@ -1406,7 +1406,7 @@ SPVM_API_VALUE SPVM_RUNTIME_call_sub(SPVM_API* api, int32_t sub_id, SPVM_API_VAL
         // Set array
         call_stack[bytecodes[bytecode_index + 1]].object_value = object;
         
-        bytecode_index += 2;
+        bytecode_index += 3;
         break;
       }
       case SPVM_BYTECODE_C_CODE_REG_NEW_SHORT_ARRAY: {
