@@ -38,43 +38,57 @@ package TestCase::JSON {
   }
 
   sub test_flat_hash : int () {
-    my $json_texts = ["{}", "{\"digit\":42}", "{\"string\":\"vstr\"}", "{\"double\":0.123}", "{\"bool_true\":true}", "{\"bool_false\":false}", "{\"A\":0.1,\"ABC\":false,\"a\":1,\"qwerty\":\"asdfg\"}"];
-    return _validate($DEFAULT_JSON, $json_texts, $json_texts);
+    my $tests = ["{}", "{\"digit\":42}", "{\"string\":\"vstr\"}", "{\"double\":0.123}", "{\"bool_true\":true}", "{\"bool_false\":false}", "{\"A\":0.1,\"ABC\":false,\"a\":1,\"qwerty\":\"asdfg\"}"];
+    return _validate($DEFAULT_JSON, $tests, $tests);
   }
 
   sub test_flat_list : int () {
-    my $json_texts = ["[]", "[1,2,3]", "[\"abc\",\"123\"]", "[123,\"abc\",0,\"123abc\",3.1415]"];
-    return _validate($DEFAULT_JSON, $json_texts, $json_texts);
+    my $tests = ["[]", "[1,2,3]", "[\"abc\",\"123\"]", "[123,\"abc\",0,\"123abc\",3.1415]"];
+    return _validate($DEFAULT_JSON, $tests, $tests);
   }
 
   sub test_digits_int : int () {
-    my $json_texts = ["[0,1,-1]"];
-    return _validate($DEFAULT_JSON, $json_texts, $json_texts);
+    my $tests = ["[0,1,-1]"];
+    return _validate($DEFAULT_JSON, $tests, $tests);
   }
 
   sub test_digits_long : int () {
-    my $json_texts = ["[100000000000,-100000000000]"];
+    my $tests = ["[100000000000,-100000000000]"];
     my $json = SPVM::JSON->new;
     $json->{canonical} = 1;
     $json->{num_policy} = SPVM::JSON->ALLOW_LONG;
-    return _validate($json, $json_texts, $json_texts);
+    return _validate($json, $tests, $tests);
+  }
+
+  sub test_digits_big_integer : int () {
+    warn ("TODO: test_digits_big_integer");
+    return 0;
   }
 
   sub test_digits_double : int () {
-    my $json_texts = ["[0.123,-0.123,3.14,-3.14,123.987,-123.987,1.23456e+1,1.23456e-1,1.23456e+08,1.23456e-08,1.23456e+008,1.23456e-008,1.23456e+018,1.23456e-018,9.9e-100,9.9e+300,-1.23e+123]"];
-    return _validate($DEFAULT_JSON, $json_texts, $json_texts);
+    my $tests = [
+      "0.123", "-0.123", "3.14", "-3.14", "123.987", "-123.987",
+      "1.23456e+1", "1.23456e-1", "1.23456e+08", "1.23456e-08", "1.23456e+008", "1.23456e-008",
+      "1.23456e+018", "1.23456e-018", "9.9e-100", "9.9e+300", "-1.23e+123"
+    ];
+    return _validate($DEFAULT_JSON, $tests, $tests);
+  }
+
+  sub test_digits_big_decimal : int () {
+    warn ("TODO: test_digits_big_decimal");
+    return 0;
   }
 
   sub test_root_is_primitive : int () {
-    my $json_texts = ["\"abc\"", "123", "true"];
-    return _validate($DEFAULT_JSON, $json_texts, $json_texts);
+    my $tests = ["\"abc\"", "123", "true"];
+    return _validate($DEFAULT_JSON, $tests, $tests);
   }
 
   sub test_nest_object : int () {
-    my $json_texts = [
+    my $tests = [
       "{\"A\":{\"B\":1,\"C\":{\"D\":0.1,\"E\":true,\"F\":\"str\",\"G\":[\"elem\",\"ents\",{\"key\":\"value\"}]}},\"end\":\"eof\"}"
     ];
-    unless (_validate($DEFAULT_JSON, $json_texts, $json_texts)) {
+    unless (_validate($DEFAULT_JSON, $tests, $tests)) {
       return 0;
     }
     return 1;
@@ -178,8 +192,8 @@ package TestCase::JSON {
   }
 
   sub test_special_chars : int () {
-    my $json_texts = ["\"\\\"\\\\\\t\\n\\r\""];
-    unless (_validate($DEFAULT_JSON, $json_texts, $json_texts)) {
+    my $tests = ["\"\\\"\\\\\\t\\n\\r\""];
+    unless (_validate($DEFAULT_JSON, $tests, $tests)) {
       return 0;
     }
     return 1;

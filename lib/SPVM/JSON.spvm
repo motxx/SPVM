@@ -175,6 +175,7 @@ package SPVM::JSON {
   }
 
   sub _decode_digits : object ($self : self, $s : string, $i : int&, $end : int) {
+    # BigDecimalのdecodeは別にしたほうがいい
     my $begin = $$i;
     my $rng_int = [$begin, -1];
     my $rng_decimal = [-1, -1];
@@ -231,8 +232,7 @@ package SPVM::JSON {
           _croak_with_dump_remain("Invalid number.", $s, $$i, $end);
         }
         ++$$i;
-        if ($$i < $end && $s->[$$i] == '+') {
-          $constraint = _DIGIT_EXPECTED();
+        if ($$i + 1 < $end && $s->[$$i + 1] == '+') {
           ++$$i;
           ++$rng_exp->[0];
         }
