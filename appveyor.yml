@@ -1,0 +1,25 @@
+version: "1.0.{build}"
+image: Visual Studio 2017
+
+init:
+  - git config --global core.autocrlf input
+
+install:
+  - choco install strawberryperl
+  - SET PATH=C:\strawberry\c\bin;C:\strawberry\perl\site\bin;C:\strawberry\perl\bin;%PATH%
+  - choco install -y make
+
+build: off
+
+test_script:
+  - perl Makefile.pl
+  - make
+  - make test
+
+cache:
+  - C:\Users\appveyor\AppData\Local\Temp\1\chocolatey
+  - local
+  - spvm_build
+  - t/default/spvm_build
+
+shallow_clone: true
