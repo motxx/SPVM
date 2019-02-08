@@ -1,25 +1,50 @@
-version: "1.0.{build}"
-image: Visual Studio 2017
+environment:
+    CYG_MIRROR: http://cygwin.mirror.constant.com
+    CYG_PACKAGES: make,gcc-core,mingw64-i686-gcc-core,mingw64-x86_64-gcc-core
+    MSYS_PACKAGES: mingw-w64-x86_64-cmocka mingw-w64-i686-cmocka
+    matrix:
+        - MSYSTEM: MINGW64
+          BASH: C:\msys64\usr\bin\bash
+          MSYS_CACHE: C:\msys64\var\cache\pacman\pkg
+          CC: x86_64-w64-mingw32-gcc
+        - MSYSTEM: MINGW32
+          BASH: C:\msys64\usr\bin\bash
+          MSYS_CACHE: C:\msys64\var\cache\pacman\pkg
+          CC: i686-w64-mingw32-gcc
+        - CYG_ROOT: C:\cygwin64
+          CYG_CACHE: C:\cygwin64\var\cache\setup
+          CYG_SETUP: setup-x86_64.exe
+          BASH: C:\cygwin64\bin\bash
+          CC: gcc
+        - CYG_ROOT: C:\cygwin
+          CYG_CACHE: C:\cygwin\var\cache\setup
+          CYG_SETUP: setup-x86.exe
+          BASH: C:\cygwin\bin\bash
+          CC: gcc
+        - CC: msvc
 
-init:
-  - git config --global core.autocrlf input
-
-install:
-  - choco install strawberryperl
-  - SET PATH=C:\strawberry\c\bin;C:\strawberry\perl\site\bin;C:\strawberry\perl\bin;%PATH%
-  - choco install -y make
+cache:
+    - '%CYG_CACHE%'
+    - '%MSYS_CACHE%'
+    - spvm_build
+    - t/default/spvm_build
 
 build: off
 
-test_script:
-  - perl Makefile.pl
-  - make
-  - make test
+init:
+    - git config --global core.autocrlf input
+install:
+    - ps: if (Test-Path Env:\CYG_ROOT) { Start-FileDownload "https://cygwin.com/$env:CYG_SETUP" -FileName "$env:CYG_SETUP" }
+    - if defined CYG_ROOT (%CYG_SETUP% --quiet-mode --no-shortcuts --only-site --root "%CYG_ROOT%" --site "%CYG_MIRROR%" --local-package-dir "%CYG_CACHE%" --packages "%CYG_PACKAGES%" --upgrade-also)
+    - if defined MSYSTEM (%BASH% -lc "pacman -Suuy --noconfirm ${MSYS_PACKAGES}")
+    - if defined MSYSTEM (%BASH% -lc "pacman -Suuy --noconfirm ${MSYS_PACKAGES} && pacman -Sc --noconfirm")
+build_script:
+    - if defined BASH (%BASH% -lc "cd $(cygpath ${APPVEYOR_BUILD_FOLDER}) && make")
+    - if "%MSYSTEM%" == "MINGW64" (%BASH% -lc "cd $(cygpath ${APPVEYOR_BUILD_FOLDER}) && make -C bindings/go")
+    - if "%CC%" == "msvc" (msbuild %APPVEYOR_BUILD_FOLDER%/msvc/unicorn.sln)
 
-cache:
-  - C:\Users\appveyor\AppData\Local\Temp\1\chocolatey
-  - local
-  - spvm_build
-  - t/default/spvm_build
+test_script:
+    - if defined CYG_ROOT (%BASH% -lc "cd $APPVEYOR_BUILD_FOLDER && ./install-cmocka-linux.sh && export PATH=$PATH:$APPVEYOR_BUILD_FOLDER:$APPVEYOR_BUILD_FOLDER/cmocka/src && perl Makefile.pl && make && make test")
+    - if defined MSYSTEM (%BASH% -lc "cd $APPVEYOR_BUILD_FOLDER && export PATH=$PATH:$APPVEYOR_BUILD_FOLDER && perl Makefile.pl && make && make test")
 
 shallow_clone: true
