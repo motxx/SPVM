@@ -1,31 +1,25 @@
 environment:
-    CYG_MIRROR: http://cygwin.mirror.constant.com
-    CYG_PACKAGES: make,gcc-core,mingw64-i686-gcc-core,mingw64-x86_64-gcc-core
-    MSYS_PACKAGES: mingw-w64-x86_64-cmocka mingw-w64-i686-cmocka
-    matrix:
-        - MSYSTEM: MINGW64
-          BASH: C:\msys64\usr\bin\bash
-          MSYS_CACHE: C:\msys64\var\cache\pacman\pkg
-          CC: x86_64-w64-mingw32-gcc
+  matrix:
+  - BUILD_SYSTEM: make
+    ARCH: "i686"
+  - BUILD_SYSTEM: make
+    ARCH: "x86_64"
 
-cache:
-    - '%CYG_CACHE%'
-    - '%MSYS_CACHE%'
-    - spvm_build
-    - t/default/spvm_build
-
-build: off
-
-init:
-    - git config --global core.autocrlf input
 install:
-    - ps: if (Test-Path Env:\CYG_ROOT) { Start-FileDownload "https://cygwin.com/$env:CYG_SETUP" -FileName "$env:CYG_SETUP" }
-    - if defined MSYSTEM (%BASH% -lc "pacman -Suuy --noconfirm ${MSYS_PACKAGES}")
-    - if defined MSYSTEM (%BASH% -lc "pacman -Suuy --noconfirm ${MSYS_PACKAGES} && pacman -Sc --noconfirm")
+- IF "%ARCH%"=="i686" (
+    SET "TOOLCHAIN=i686-6.3.0-posix-dwarf-rt_v5-rev1\mingw32"
+  ) ELSE (
+    SET "TOOLCHAIN=x86_64-7.3.0-posix-seh-rt_v5-rev0\mingw64"
+  )
+
+before_build:
+- SET "CC=gcc" &&
+  SET "PATH=C:\mingw-w64\%TOOLCHAIN%\bin;%PATH%" &&
+  COPY C:\msys64\usr\bin\make.exe C:\mingw-w64\%TOOLCHAIN%\bin\make.exe
+- SET "ROOT=%APPVEYOR_BUILD_FOLDER%"
+
 build_script:
-    - if "%MSYSTEM%" == "MINGW64" (%BASH% -lc "cd $(cygpath ${APPVEYOR_BUILD_FOLDER}) && perl Makefile.PL && make -C bindings/go")
+- sh -c "perl Makefile.PL && make"
 
 test_script:
-    - if defined MSYSTEM (%BASH% -lc "cd $APPVEYOR_BUILD_FOLDER && export PATH=$PATH:$APPVEYOR_BUILD_FOLDER && make test")
-
-shallow_clone: true
+- sh -c "make test"
