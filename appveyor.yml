@@ -1,25 +1,15 @@
-environment:
-  matrix:
-  - BUILD_SYSTEM: make
-    ARCH: "i686"
-  - BUILD_SYSTEM: make
-    ARCH: "x86_64"
+cache:
+- C:\strawberry
 
 install:
-- IF "%ARCH%"=="i686" (
-    SET "TOOLCHAIN=i686-6.3.0-posix-dwarf-rt_v5-rev1\mingw32"
-  ) ELSE (
-    SET "TOOLCHAIN=x86_64-7.3.0-posix-seh-rt_v5-rev0\mingw64"
-  )
-
-before_build:
-- SET "CC=gcc" &&
-  SET "PATH=C:\mingw-w64\%TOOLCHAIN%\bin;%PATH%" &&
-  COPY C:\msys64\usr\bin\make.exe C:\mingw-w64\%TOOLCHAIN%\bin\make.exe
-- SET "ROOT=%APPVEYOR_BUILD_FOLDER%"
+- if not exist "C:\strawberry" choco install strawberryperl -y
+- set PATH=C:\strawberry\c\bin;C:\strawberry\perl\site\bin;C:\strawberry\perl\bin;%PATH%
+- cd %APPVEYOR_BUILD_FOLDER%
+- cpanm --quiet --installdeps --with-develop --notest .
 
 build_script:
-- sh -c "perl Makefile.PL && dmake"
+- perl Makefile.PL
+- gmake
 
 test_script:
-- sh -c "dmake test"
+- gmake test
