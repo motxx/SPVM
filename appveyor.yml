@@ -19,7 +19,7 @@ before_build:
 - SET "ROOT=%APPVEYOR_BUILD_FOLDER%"
 
 build_script:
-- sh -c "perl Makefile.PL && make"
+- sh -c "perl Makefile.PL && dmake"
 
 test_script:
-- sh -c "make test"
+- sh -c "dmake test"
