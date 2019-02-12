@@ -129,7 +129,7 @@ typedef bool spvm_utf8proc_bool;
 #    else
 #      define SPVM_UTF8PROC_DLLEXPORT __declspec(dllimport)
 #    endif
-#  elif defined _WIN64
+#  elif defined WIN64
 #    define SPVM_UTF8PROC_DLLEXPORT __declspec(dllimport)
 #  elif __GNUC__ >= 4
 #    define SPVM_UTF8PROC_DLLEXPORT __attribute__ ((visibility("default")))
