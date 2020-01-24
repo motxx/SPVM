@@ -13,14 +13,8 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        perl-version:
-          - '5.8'
-          - 'latest'
-
     container:
-      image: perl:${{ matrix.perl-version }}
+      image: perl:latest
 
     steps:
       - uses: actions/checkout@v1
