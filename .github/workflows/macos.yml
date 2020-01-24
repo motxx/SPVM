@@ -9,10 +9,8 @@ on:
   pull_request:
 
 jobs:
-  perl:
-
+  build:
     runs-on: macos-latest
-
     steps:
       - uses: actions/checkout@v1
       - name: Install perl

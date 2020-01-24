@@ -9,17 +9,10 @@ on:
   pull_request:
 
 jobs:
-  perl:
-
+  build:
     runs-on: ubuntu-latest
-
-    container:
-      image: perl:latest
-
     steps:
       - uses: actions/checkout@v1
-      - name: Setup
-        run: cpanm ExtUtils::CBuilder
       - name: perl Makefile.PL
         run: perl Makefile.PL
       - name: make
