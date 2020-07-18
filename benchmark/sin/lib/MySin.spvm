@@ -1,0 +1,17 @@
+package MySin {
+  use SPVM::Math (sin);
+
+  sub spvm_sin : void ($input_array : double[], $output_array : double[], $array_count : int) {
+    for (my $i = 0; $i < $array_count; $i++) {
+      $output_array->[$i] = sin($input_array->[$i]);
+    }
+  }
+
+  precompile sub spvm_sin_precompile : void ($input_array : double[], $output_array : double[], $array_count : int) {
+    for (my $i = 0; $i < $array_count; $i++) {
+      $output_array->[$i] = sin($input_array->[$i]);
+    }
+  }
+
+  native sub spvm_sin_native : void ($input_array : double[], $output_array : double[], $array_count : int);
+}
