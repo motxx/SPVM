@@ -1,0 +1,3 @@
+package TestArray {
+  native sub test : void ($input_array : double[], $array_count : int);
+}
