@@ -51,6 +51,17 @@ print "correct val: " . $x->[12345], "\n";
 print "output size: " . @$x, "\n";
 #print "zeroval: " . (join ', ', grep { !($expected - $eps <= $_ && $_ <= $expected + $eps) } @{$spvm_array_output_native->to_elems}) . "\n";
 #print "index: " . (join ', ', map { $x->[$_ - 1] == 0 ? $_ : () } (1 .. $array_count) ) . "\n";
+
+{
+  my $input_native = $spvm_array_input_native->to_elems;
+  for (0 .. $array_count - 1) {
+    if ($input_native->[$_] == 0) {
+      print "index: $_ input_native: $input_native->[$_]\n";
+      die;
+    }
+  }
+}
+
 for (0 .. $array_count - 1) {
   if ($x->[$_] == 0) {
     print "index: $_ output: $x->[$_]\n";
